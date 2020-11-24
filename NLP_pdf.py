@@ -10,6 +10,7 @@ import spacy
 from spacy.matcher import PhraseMatcher
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
+import re
 
 import nltk
 from nltk.corpus import stopwords
@@ -30,27 +31,47 @@ strText = text.decode(encoding)
 spell = Speller(lang='en')
 spellText = spell(strText)
 spellText = spellText.lower()
+spellText = re.sub(r'\s+[a-zA-Z]\s+', ' ', spellText) #remove single characters
+
+#remove numbers/digits
+no_num = ''.join(c if c not in map(str,range(0,10)) else "" for c in spellText)
+
+#remove single character
+no_single = re.sub(r'\s+[a-zA-Z]\s+', ' ', no_num)
 
 #load English language module for nlp
 nlp = spacy.load('en_core_web_sm')
 
 #tokenize the information so that we can work with it in spacy
-text_tokens = word_tokenize(spellText)
+text_tokens = word_tokenize(no_single)
+#full_text = nlp(spellText)
 
-#pull out stop words and keep remaining text
+
+#had to add in a few extra stop words because of the poor translation from pdf to work and missing letters
 all_stopwords = nlp.Defaults.stop_words
 all_stopwords |= {"as", "if", "cut", "ou", "ant", "oka", "apical", "so", "er", "si", "ans", "ie", "gi",
 	"ha", "es", "ne", "ing", "ide", "ma", "ell", "ling", "ori", "ho", "ops", "ent", "ith", "sa", "ist",
-	"ol", "a.", "yeah", "--", "de", "ill", "ance", "ef", "di", "tr", "ta", "nd", "pri", "ac", "ard", "lea",}
-text_no_stop = [word for word in text_tokens if not word in all_stopwords]
+	"ol", "a.", "yeah", "--", "de", "ill", "ance", "ef", "di", "tr", "ta", "nd", "pri", "ac", "ard", "lea",
+	"pa", "ia", "bod", "da", "yup", "yep", "lot", "et", "ed", "mo", "/", "//", "e.", "la", "lo", "e", "-up",
+	"dif", "gu", "ste", "al", "ere", "'", "."}
 
-print(text_no_stop)
+#remove stop words
+no_stops = [word for word in text_tokens if not word in all_stopwords]
 
+#remove punctuation
+punctuations = ['.', ',', '/', '!', '?', ';', ':', '(',')', '[',']', '-', '_', '%']
+no_punc = [word for word in no_stops if not word in punctuations]
 
+#remove numbers
+def cleanUp(text):
+	output = ' '.join(c for c in text if not c.isdigit())
+	return output
 
-#process text with spacy and the English module loaded above
-#doc = nlp(spellText)
+# lemmatize words?
 
+# set frequency threshold
+
+# complete word cloud
 
 
 #####
