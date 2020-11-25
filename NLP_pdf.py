@@ -72,13 +72,32 @@ lemmatized_data = [lemmatizer.lemmatize(word) for word in not_token_data]
 # clean data
 clean_data = ''.join(lemmatized_data)
 
+### Start to Analyze ###
 #create dataframe to analyze data
 df = pd.DataFrame([clean_data])
 df.columns = ['words']
 df.index = ['document']
-print(df)
 
-# set frequency threshold
+# create a bag of words and count the frequency of each word
+from sklearn.feature_extraction.text import CountVectorizer
+import numpy as np
+
+corpus = df.words
+vect = CountVectorizer(stop_words='english')
+
+data_vect = vect.fit_transform(corpus)
+
+#now let's get the count
+tags = vect.get_feature_names()
+features = pd.DataFrame(data_vect.toarray(), columns=tags)
+features.index = df.index
+
+data_count = features.transpose()
+print(data_count)
+
+###
+#get the top 50 words from the pdf
+
 
 # complete word cloud
 
