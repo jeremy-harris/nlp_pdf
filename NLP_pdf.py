@@ -92,14 +92,16 @@ tags = vect.get_feature_names()
 features = pd.DataFrame(data_vect.toarray(), columns=tags)
 features.index = df.index
 
-data_count = features.transpose()
-print(data_count)
+data_count = features.transpose() #get into column format
+data_count.columns = ['freq'] #change name to freq
+data_count = data_count.sort_values(by='freq', ascending=False) #sort data
+
+cloud_data = data_count[:50] #extract the first 50 words
+
+print(cloud_data.shape)
 
 ###
-#get the top 50 words from the pdf
-
-
-# complete word cloud
+#Create word cloud from data
 
 
 #####
