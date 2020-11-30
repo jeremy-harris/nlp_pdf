@@ -50,11 +50,16 @@ all_stopwords |= {"as", "if", "cut", "ou", "ant", "oka", "apical", "so", "er", "
 	"ha", "es", "ne", "ing", "ide", "ma", "ell", "ling", "ori", "ho", "ops", "ent", "ith", "sa", "ist",
 	"ol", "a.", "yeah", "--", "de", "ill", "ance", "ef", "di", "tr", "ta", "nd", "pri", "ac", "ard", "lea",
 	"pa", "ia", "bod", "da", "yup", "yep", "lot", "et", "ed", "mo", "/", "//", "e.", "la", "lo", "e", "-up",
-	"dif", "gu", "ste", "al", "ere", "'", ".", "spec", "co", "cult", ""}
+	"dif", "gu", "ste", "al", "ere", "'", ".", "spec", "co", "cult", "", "talk", "hen", "hat", "slam", "man",
+	"come", "sure", "talking", "look", "able", "great"}
 
 #tokenize the information so that we can work with it in spacy
 text_tokens = word_tokenize(no_single)
-#full_text = nlp(spellText)
+
+#fix spelling errors that I found in word cloud
+for n, i in enumerate(text_tokens):
+	if i == "orthiness":
+		text_tokens[n] = "worthiness"
 
 #remove stop words
 no_stops = [word for word in text_tokens if not word in all_stopwords]
@@ -70,8 +75,9 @@ lemmatizer = WordNetLemmatizer()
 lemmatized_data = [lemmatizer.lemmatize(word) for word in not_token_data]
 
 # clean data
-clean_data = ''.join(lemmatized_data)
 
+clean_data = ''.join(lemmatized_data)
+'''
 ### Start to Analyze ###
 #create dataframe to analyze data
 df = pd.DataFrame([clean_data])
@@ -93,20 +99,28 @@ features = pd.DataFrame(data_vect.toarray(), columns=tags)
 features.index = df.index
 
 data_count = features.transpose() #get into column format
-data_count.columns = ['freq'] #change name to freq
+data_count.reset_index(inplace=True)
+data_count = data_count.rename(columns = {'index': 'word', 'document': 'freq'})
+#data_count.columns = ['freq'] #change name to freq
 data_count = data_count.sort_values(by='freq', ascending=False) #sort data
+#top_50 = data_count[:50] #extract the first 50 words
 
-cloud_data = data_count[:50] #extract the first 50 words
-
-print(cloud_data.shape)
-
+'''
 ###
 #Create word cloud from data
+wc = WordCloud(min_font_size=10, background_color="white").generate(clean_data)
 
+plt.figure(figsize=(8,4))
+plt.imshow(wc, interpolation='bilinear')
+plt.axis("off")
+plt.show()
+
+#Save the image
+#wc.to_file("word_cloud.png")
 
 #####
-# Maybe from here, do a word cloud or some other way to show the sentiment of the document?
-#wordcloud = WordCloud(stopwords=STOPWORDS).generate(doc)
-#plt.imshow(wordcloud, interpolation='bilinear')
-#plt.axis("off")
-#plot.show()
+## Work On: 
+### sentiment analysis, group words by topic & bar chart. 
+### turn into docker container and test
+### use case for docker swarm or Kubernetes? 
+### Update website and github. Share to MS teams
