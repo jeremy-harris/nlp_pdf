@@ -7,6 +7,7 @@ from autocorrect import Speller #need to run: pip install autocorrect on machine
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 import spacy
+import en_core_web_sm
 from spacy.matcher import PhraseMatcher
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
@@ -108,7 +109,7 @@ data_count = data_count.sort_values(by='freq', ascending=False) #sort data
 '''
 ###
 #Create word cloud from data
-wc = WordCloud(min_font_size=10, background_color="white").generate(clean_data)
+wc = WordCloud(min_font_size=8, background_color="white").generate(clean_data)
 
 plt.figure(figsize=(8,4))
 plt.imshow(wc, interpolation='bilinear')
